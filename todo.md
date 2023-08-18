@@ -11,6 +11,14 @@
     - get headers - pass in a callback in a request function
 - [ ] maybe middleware eventually (with a composable?)
 
+---
+
+next time
+
+- [ ] add plugin to nuxt, try making a request to register
+
+---
+
 ## todo by auth methods
 
 - [ ] sign up email
