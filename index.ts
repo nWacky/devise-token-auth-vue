@@ -1,5 +1,5 @@
+import { App } from "vue";
+
 const myPlugin = {
-  install(app: Vue, options) {
-    // configure the app
-  },
+  install(app: App, options: any) {},
 };
