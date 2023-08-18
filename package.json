@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx tsc --watch --outDir ./.out",
-    "build": "npx tsc --outDir ./build"
+    "build": "npm run clean && npx tsc --outDir ./build",
+    "clean": "rm -r build"
   },
   "keywords": [
     "vue",
