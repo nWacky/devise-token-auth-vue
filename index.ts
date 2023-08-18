@@ -1,5 +1,5 @@
 const myPlugin = {
-  install(app, options) {
+  install(app: Vue, options) {
     // configure the app
   },
 };
