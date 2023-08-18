@@ -1,0 +1,1 @@
+export { default } from "file:///Users/dev/Documents/devise-token-auth-vue/playground/nuxt/node_modules/@nuxt/vite-builder/dist/runtime/vite-node.mjs"
