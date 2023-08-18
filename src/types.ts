@@ -1,7 +1,7 @@
 export type AuthHeaders = {
-  uid: string;
-  client: string;
-  "access-token": string;
+  uid?: string;
+  client?: string;
+  "access-token"?: string;
 };
 
 // devise requests

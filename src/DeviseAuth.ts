@@ -19,9 +19,14 @@ export class DeviseAuth {
   registerEmail(params: LoginReqParams) {
     this._options.http.makeRequest({
       url: this._options.apiUrl,
+      reqHeaders: this._getReqHeaders(),
       getRespHeaders: this._getRespHeaders,
-      reqHeaders: {},
     });
+  }
+
+  _getReqHeaders(): AuthHeaders {
+    // todo
+    return {};
   }
 
   _getRespHeaders(headers: AuthHeaders) {
