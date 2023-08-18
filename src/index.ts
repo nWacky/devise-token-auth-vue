@@ -5,7 +5,7 @@ import type { DeviseAuthOptions } from "./types/options";
 
 const vueDeviseAuth = {
   install(app: App, options: DeviseAuthOptions) {
-    const auth = new DeviseAuth(options.apiUrl);
+    const auth = new DeviseAuth(options);
 
     // todo:
     // app.provide();
