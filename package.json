@@ -2,7 +2,9 @@
   "name": "devise-token-auth-vue",
   "version": "1.0.0",
   "description": "Vue 3/Nuxt 3 plugin for devise-token-auth",
-  "main": "index.ts",
+  "exports": {
+    ".": "./src/"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "npx tsc --watch --outDir ./.out",
