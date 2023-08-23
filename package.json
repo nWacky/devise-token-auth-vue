@@ -1,12 +1,15 @@
 {
   "name": "devise-token-auth-vue",
   "version": "1.0.0",
-  "description": "Vue/Nuxt plugin for devise-token-auth",
-  "main": "index.ts",
+  "description": "Vue 3/Nuxt 3 plugin for devise-token-auth",
+  "exports": {
+    ".": "./src/"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npx tsc --watch --outDir ./.out",
-    "build": "npx tsc --outDir ./build"
+    "dev": "cd playground/nuxt && npm run dev",
+    "build": "npm run clean && npx tsc --outDir ./build",
+    "clean": "rm -r build"
   },
   "keywords": [
     "vue",
