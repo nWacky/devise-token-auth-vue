@@ -7,7 +7,10 @@ import type {
   UpdatePasswordParams,
   UpdateReqParams,
   ResetPasswordParams,
+  FetchRequestParams,
 } from "./types";
+
+import { AuthHeaderKeys } from "./types";
 
 export class DeviseAuth {
   _options: DeviseAuthOptions;
@@ -16,17 +19,41 @@ export class DeviseAuth {
     this._options = o;
   }
 
-  _getReqHeaders(): AuthHeaders {
-    // todo: get from cookie
-    return {
-      uid: "1",
-      client: "yes",
-      "access-token": "no",
-    };
+  _getReqHeaders(): AuthHeaders | undefined {
+    let h = this._options.cookie.get();
+
+    console.log("got cookie val: ", h);
+
+    if (h) {
+      return h;
+    }
+
+    return undefined;
   }
 
-  _getRespHeaders(headers: AuthHeaders) {
+  _getRespHeaders(headers: AuthHeaders & Record<string, string>) {
     // todo: save to cookie
+    console.log("got headers: ", headers);
+    console.log("got this: ", this);
+
+    const authHeaders: AuthHeaders = {};
+
+    const headerKeys = AuthHeaderKeys as Readonly<string[]>;
+
+    for (let [key, value] of Object.entries(headers)) {
+      if (headerKeys.includes(key)) {
+        authHeaders[key as (typeof AuthHeaderKeys)[number]] = value;
+      }
+    }
+
+    console.log("got headers: ", authHeaders);
+
+    if (Object.keys(authHeaders).length == 0) {
+      this._options.cookie.set(null);
+      return;
+    }
+
+    this._options.cookie.set(authHeaders);
   }
 
   /**
@@ -38,10 +65,10 @@ export class DeviseAuth {
    */
   // todo: pass optional params everywhere
   public async registerEmail(body: LoginReqParams) {
-    await this._options.http.makeRequest({
+    return await this._options.http.makeRequest({
       url: this._options.apiUrl,
       reqHeaders: this._getReqHeaders(),
-      getRespHeaders: this._getRespHeaders,
+      getRespHeaders: this._getRespHeaders.bind(this),
       method: "POST",
       body,
     });
@@ -54,10 +81,10 @@ export class DeviseAuth {
    * `uid`, `access-token` and `client` headers.
    */
   public async deleteAccount() {
-    await this._options.http.makeRequest({
+    return await this._options.http.makeRequest({
       url: this._options.apiUrl,
       reqHeaders: this._getReqHeaders(),
-      getRespHeaders: this._getRespHeaders,
+      getRespHeaders: this._getRespHeaders.bind(this),
       method: "DELETE",
     });
   }
@@ -73,10 +100,10 @@ export class DeviseAuth {
    * any update or only if the request updates user password.
    */
   public async updateAccount(body: UpdateReqParams) {
-    await this._options.http.makeRequest({
+    return await this._options.http.makeRequest({
       url: this._options.apiUrl,
       reqHeaders: this._getReqHeaders(),
-      getRespHeaders: this._getRespHeaders,
+      getRespHeaders: this._getRespHeaders.bind(this),
       method: "PUT",
       body,
     });
@@ -90,12 +117,12 @@ export class DeviseAuth {
    * on successful login along with the `access-token`
    * and `client` in the header of the response.
    */
-  public async signIn(body: UpdateReqParams) {
+  public async signIn(body: LoginReqParams) {
     // todo: make sure headers are set!
-    await this._options.http.makeRequest({
+    return await this._options.http.makeRequest({
       url: `${this._options.apiUrl}/sign_in`,
       reqHeaders: this._getReqHeaders(),
-      getRespHeaders: this._getRespHeaders,
+      getRespHeaders: this._getRespHeaders.bind(this),
       method: "POST",
       body,
     });
@@ -108,9 +135,9 @@ export class DeviseAuth {
     // todo: delete cookie regardless?
     // todo: if no cookies return
 
-    await this._options.http.makeRequest({
+    return await this._options.http.makeRequest({
       reqHeaders: this._getReqHeaders(),
-      getRespHeaders: this._getRespHeaders,
+      getRespHeaders: this._getRespHeaders.bind(this),
       url: `${this._options.apiUrl}/sign_out`,
       method: "DELETE",
     });
@@ -124,9 +151,9 @@ export class DeviseAuth {
    * Returns a `User` if all tokens are valid
    */
   public async validateToken() {
-    await this._options.http.makeRequest({
+    return await this._options.http.makeRequest({
       reqHeaders: this._getReqHeaders(),
-      getRespHeaders: this._getRespHeaders,
+      getRespHeaders: this._getRespHeaders.bind(this),
       url: `${this._options.apiUrl}/validate_token`,
       method: "GET",
     });
@@ -147,9 +174,9 @@ export class DeviseAuth {
   public async sendPasswordConfirmation(
     params: SendPasswordConfirmationParams
   ) {
-    await this._options.http.makeRequest({
+    return await this._options.http.makeRequest({
       reqHeaders: this._getReqHeaders(),
-      getRespHeaders: this._getRespHeaders,
+      getRespHeaders: this._getRespHeaders.bind(this),
       url: `${this._options.apiUrl}/password`,
       method: "POST",
       body: params,
@@ -166,9 +193,9 @@ export class DeviseAuth {
    * It also checks `current_password` (if enabled on the backend, disabled by default).
    */
   public async changePassword(params: UpdatePasswordParams) {
-    await this._options.http.makeRequest({
+    return await this._options.http.makeRequest({
       reqHeaders: this._getReqHeaders(),
-      getRespHeaders: this._getRespHeaders,
+      getRespHeaders: this._getRespHeaders.bind(this),
       url: `${this._options.apiUrl}/password`,
       method: "PUT",
       body: params,
@@ -185,9 +212,9 @@ export class DeviseAuth {
    * that is generated by the password reset request (`sendPasswordConfirmation`).
    */
   public async resetPassword(params: ResetPasswordParams) {
-    await this._options.http.makeRequest({
+    return await this._options.http.makeRequest({
       reqHeaders: this._getReqHeaders(),
-      getRespHeaders: this._getRespHeaders,
+      getRespHeaders: this._getRespHeaders.bind(this),
       url: `${this._options.apiUrl}/password/edit`,
       method: "GET",
       params,
@@ -201,12 +228,32 @@ export class DeviseAuth {
    * if backend supports that).
    */
   public async resendConfirmationEmail(params: SendPasswordConfirmationParams) {
-    await this._options.http.makeRequest({
+    return await this._options.http.makeRequest({
       reqHeaders: this._getReqHeaders(),
-      getRespHeaders: this._getRespHeaders,
+      getRespHeaders: this._getRespHeaders.bind(this),
       url: `${this._options.apiUrl}/confirmation`,
       method: "POST",
       body: params,
     });
+  }
+
+  /**
+   * Fetch the response as an authenticated user, sending
+   * `AuthHeaders`.
+   *
+   * If the user wasn't authenticated, won't send any `AuthHeaders`.
+   *
+   * Similar to `axios({ method: '...' })` and `$fetch(url, { method: '...' })`,
+   * but automatically adds auth headers
+   */
+  public async fetch<T>(reqParams: FetchRequestParams, ...params: T[]) {
+    return await this._options.http.makeRequest(
+      {
+        reqHeaders: this._getReqHeaders(),
+        getRespHeaders: this._getRespHeaders.bind(this),
+        ...reqParams,
+      },
+      params
+    );
   }
 }

@@ -9,9 +9,6 @@ export const vueDeviseAuth = {
   install(app: App, options: DeviseAuthOptions) {
     const auth = new DeviseAuth(options);
 
-    // todo:
-    // app.provide();
-
     app.provide(INJECT_KEY, auth);
   },
 };

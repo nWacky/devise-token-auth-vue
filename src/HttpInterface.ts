@@ -7,7 +7,7 @@ export type GetRespHeadersTy = (h: AuthHeaders) => void;
 export type MakeRequestParams = {
   url: string;
 
-  reqHeaders: AuthHeaders;
+  reqHeaders?: AuthHeaders;
 
   getRespHeaders: GetRespHeadersTy;
 
@@ -21,6 +21,9 @@ export type MakeRequestParams = {
 };
 
 export interface HttpInterface {
-  // todo: generics
-  makeRequest(p: MakeRequestParams, ...params: any[]): Promise<any>;
+  // TODO: add response types
+  makeRequest<PItem, P extends Array<PItem>, RespTy = any>(
+    p: MakeRequestParams,
+    ...params: P
+  ): Promise<RespTy>;
 }

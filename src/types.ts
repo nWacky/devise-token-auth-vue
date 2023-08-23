@@ -1,16 +1,21 @@
-export type AuthHeaders = {
-  uid?: string;
-  client?: string;
-  "access-token"?: string;
-};
+import type { MakeRequestParams } from "./HttpInterface";
+
+export const AuthHeaderKeys = ["uid", "client", "access-token"] as const;
+
+export type AuthHeaders = Partial<
+  Record<(typeof AuthHeaderKeys)[number], string>
+>;
+
+export type FetchRequestParams = Omit<
+  MakeRequestParams,
+  "reqHeaders" | "getRespHeaders"
+>;
 
 // devise requests
 
 export type LoginReqParams = {
   email: string;
   password: string;
-  password_confirmation: string;
-  confirm_success_url?: string;
 };
 
 export type UpdatePasswordParams = {

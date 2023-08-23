@@ -6,15 +6,16 @@ const auth = useAuth();
 console.log("auth: ", auth);
 
 const registerEmail = () => {
-  auth?.registerEmail({
-    email: "test@example.com",
+  auth?.signIn({
+    email: "hi@example.com",
     password: "111111",
-    password_confirmation: "111111",
   });
 };
 
-const deleteAccount = () => {
-  auth?.deleteAccount();
+const validate = async () => {
+  const resp = await auth?.validateToken();
+
+  console.log("validate resp: ", resp);
 };
 </script>
 
@@ -24,7 +25,7 @@ const deleteAccount = () => {
 
     <div class="space-y-3">
       <button @click="registerEmail">register email</button>
-      <button @click="deleteAccount">delete account</button>
+      <button @click="validate">validate token</button>
     </div>
   </div>
 </template>

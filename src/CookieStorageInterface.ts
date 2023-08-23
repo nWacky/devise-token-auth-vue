@@ -1,5 +1,6 @@
+import { AuthHeaders } from "./types";
+
 export interface CookieStorageInterface {
-  // todo: not any
-  set(data: any): void;
-  get(): any;
+  set(data: AuthHeaders | null): void;
+  get(): AuthHeaders | null;
 }
