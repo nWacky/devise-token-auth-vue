@@ -284,4 +284,20 @@ export class DeviseAuth {
       params
     );
   }
+
+  /**
+   * Returns `true` if an auth token is stored in `CookieStorage`
+   *
+   * To check whether the auth token is still valid on the server
+   * use `validateToken`
+   */
+  public hasAuthToken(): boolean {
+    const tokens = this._options.cookie.get();
+
+    if (!tokens) {
+      return false;
+    }
+
+    return Object.keys(tokens).length > 0;
+  }
 }
