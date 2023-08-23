@@ -24,3 +24,7 @@ I didn't really have time to debug this further, but for now adding this to `tsc
   }
 }
 ```
+
+## Development
+
+This repository is using [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/#summary)
