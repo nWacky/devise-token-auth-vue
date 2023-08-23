@@ -1,5 +1,5 @@
 import type { DeviseAuthOptions } from "./types/options";
-import type { HttpInterface } from "./HttpInterface";
+
 import type {
   AuthHeaders,
   LoginReqParams,
@@ -22,8 +22,6 @@ export class DeviseAuth {
   _getReqHeaders(): AuthHeaders | undefined {
     let h = this._options.cookie.get();
 
-    console.log("got cookie val: ", h);
-
     if (h) {
       return h;
     }
@@ -32,10 +30,6 @@ export class DeviseAuth {
   }
 
   _getRespHeaders(headers: AuthHeaders & Record<string, string>) {
-    // todo: save to cookie
-    console.log("got headers: ", headers);
-    console.log("got this: ", this);
-
     const authHeaders: AuthHeaders = {};
 
     const headerKeys = AuthHeaderKeys as Readonly<string[]>;
@@ -45,8 +39,6 @@ export class DeviseAuth {
         authHeaders[key as (typeof AuthHeaderKeys)[number]] = value;
       }
     }
-
-    console.log("got headers: ", authHeaders);
 
     if (Object.keys(authHeaders).length == 0) {
       this._options.cookie.set(null);
@@ -63,15 +55,18 @@ export class DeviseAuth {
    * Upon clicking the link in the confirmation email, the API will
    * redirect to the URL specified in `confirm_success_url`.
    */
-  // todo: pass optional params everywhere
-  public async registerEmail(body: LoginReqParams) {
-    return await this._options.http.makeRequest({
-      url: this._options.apiUrl,
-      reqHeaders: this._getReqHeaders(),
-      getRespHeaders: this._getRespHeaders.bind(this),
-      method: "POST",
-      body,
-    });
+  // TODO: pass params as not any
+  public async registerEmail(body: LoginReqParams, ...params: any[]) {
+    return await this._options.http.makeRequest(
+      {
+        url: this._options.apiUrl,
+        reqHeaders: this._getReqHeaders(),
+        getRespHeaders: this._getRespHeaders.bind(this),
+        method: "POST",
+        body,
+      },
+      params
+    );
   }
 
   /**
@@ -80,13 +75,16 @@ export class DeviseAuth {
    * This route will destroy users identified by their
    * `uid`, `access-token` and `client` headers.
    */
-  public async deleteAccount() {
-    return await this._options.http.makeRequest({
-      url: this._options.apiUrl,
-      reqHeaders: this._getReqHeaders(),
-      getRespHeaders: this._getRespHeaders.bind(this),
-      method: "DELETE",
-    });
+  public async deleteAccount(...params: any[]) {
+    return await this._options.http.makeRequest(
+      {
+        url: this._options.apiUrl,
+        reqHeaders: this._getReqHeaders(),
+        getRespHeaders: this._getRespHeaders.bind(this),
+        method: "DELETE",
+      },
+      params
+    );
   }
 
   /**
@@ -99,14 +97,17 @@ export class DeviseAuth {
    * The backend may also check the `current_password` param is checked before either
    * any update or only if the request updates user password.
    */
-  public async updateAccount(body: UpdateReqParams) {
-    return await this._options.http.makeRequest({
-      url: this._options.apiUrl,
-      reqHeaders: this._getReqHeaders(),
-      getRespHeaders: this._getRespHeaders.bind(this),
-      method: "PUT",
-      body,
-    });
+  public async updateAccount(body: UpdateReqParams, ...params: any[]) {
+    return await this._options.http.makeRequest(
+      {
+        url: this._options.apiUrl,
+        reqHeaders: this._getReqHeaders(),
+        getRespHeaders: this._getRespHeaders.bind(this),
+        method: "PUT",
+        body,
+      },
+      params
+    );
   }
 
   /**
@@ -117,30 +118,35 @@ export class DeviseAuth {
    * on successful login along with the `access-token`
    * and `client` in the header of the response.
    */
-  public async signIn(body: LoginReqParams) {
-    // todo: make sure headers are set!
-    return await this._options.http.makeRequest({
-      url: `${this._options.apiUrl}/sign_in`,
-      reqHeaders: this._getReqHeaders(),
-      getRespHeaders: this._getRespHeaders.bind(this),
-      method: "POST",
-      body,
-    });
+  public async signIn(body: LoginReqParams, ...params: any[]) {
+    return await this._options.http.makeRequest(
+      {
+        url: `${this._options.apiUrl}/sign_in`,
+        reqHeaders: this._getReqHeaders(),
+        getRespHeaders: this._getRespHeaders.bind(this),
+        method: "POST",
+        body,
+      },
+      params
+    );
   }
 
   /**
    * Use this route to end the user's current session. This route will invalidate the user's authentication token. You must pass in uid, client, and access-token in the request headers.
    */
-  public async signOut() {
-    // todo: delete cookie regardless?
-    // todo: if no cookies return
+  public async signOut(...params: any[]) {
+    // TODO: delete cookie regardless what the api sent
+    //       when force: true?
 
-    return await this._options.http.makeRequest({
-      reqHeaders: this._getReqHeaders(),
-      getRespHeaders: this._getRespHeaders.bind(this),
-      url: `${this._options.apiUrl}/sign_out`,
-      method: "DELETE",
-    });
+    return await this._options.http.makeRequest(
+      {
+        reqHeaders: this._getReqHeaders(),
+        getRespHeaders: this._getRespHeaders.bind(this),
+        url: `${this._options.apiUrl}/sign_out`,
+        method: "DELETE",
+      },
+      params
+    );
   }
 
   /**
@@ -150,13 +156,16 @@ export class DeviseAuth {
    *
    * Returns a `User` if all tokens are valid
    */
-  public async validateToken() {
-    return await this._options.http.makeRequest({
-      reqHeaders: this._getReqHeaders(),
-      getRespHeaders: this._getRespHeaders.bind(this),
-      url: `${this._options.apiUrl}/validate_token`,
-      method: "GET",
-    });
+  public async validateToken(...params: any[]) {
+    return await this._options.http.makeRequest(
+      {
+        reqHeaders: this._getReqHeaders(),
+        getRespHeaders: this._getRespHeaders.bind(this),
+        url: `${this._options.apiUrl}/validate_token`,
+        method: "GET",
+      },
+      params
+    );
   }
 
   /**
@@ -172,15 +181,19 @@ export class DeviseAuth {
    * after visiting the link contained in the email.
    */
   public async sendPasswordConfirmation(
-    params: SendPasswordConfirmationParams
+    body: SendPasswordConfirmationParams,
+    ...params: any[]
   ) {
-    return await this._options.http.makeRequest({
-      reqHeaders: this._getReqHeaders(),
-      getRespHeaders: this._getRespHeaders.bind(this),
-      url: `${this._options.apiUrl}/password`,
-      method: "POST",
-      body: params,
-    });
+    return await this._options.http.makeRequest(
+      {
+        reqHeaders: this._getReqHeaders(),
+        getRespHeaders: this._getRespHeaders.bind(this),
+        url: `${this._options.apiUrl}/password`,
+        method: "POST",
+        body,
+      },
+      params
+    );
   }
 
   /**
@@ -192,14 +205,17 @@ export class DeviseAuth {
    *
    * It also checks `current_password` (if enabled on the backend, disabled by default).
    */
-  public async changePassword(params: UpdatePasswordParams) {
-    return await this._options.http.makeRequest({
-      reqHeaders: this._getReqHeaders(),
-      getRespHeaders: this._getRespHeaders.bind(this),
-      url: `${this._options.apiUrl}/password`,
-      method: "PUT",
-      body: params,
-    });
+  public async changePassword(body: UpdatePasswordParams, ...params: any[]) {
+    return await this._options.http.makeRequest(
+      {
+        reqHeaders: this._getReqHeaders(),
+        getRespHeaders: this._getRespHeaders.bind(this),
+        url: `${this._options.apiUrl}/password`,
+        method: "PUT",
+        body,
+      },
+      params
+    );
   }
 
   /**
@@ -211,14 +227,20 @@ export class DeviseAuth {
    * These values will be set automatically by the confirmation email
    * that is generated by the password reset request (`sendPasswordConfirmation`).
    */
-  public async resetPassword(params: ResetPasswordParams) {
-    return await this._options.http.makeRequest({
-      reqHeaders: this._getReqHeaders(),
-      getRespHeaders: this._getRespHeaders.bind(this),
-      url: `${this._options.apiUrl}/password/edit`,
-      method: "GET",
-      params,
-    });
+  public async resetPassword(
+    passwordParams: ResetPasswordParams,
+    ...params: any[]
+  ) {
+    return await this._options.http.makeRequest(
+      {
+        reqHeaders: this._getReqHeaders(),
+        getRespHeaders: this._getRespHeaders.bind(this),
+        url: `${this._options.apiUrl}/password/edit`,
+        method: "GET",
+        params: passwordParams,
+      },
+      params
+    );
   }
 
   /**
@@ -227,14 +249,20 @@ export class DeviseAuth {
    * Requires `email` and accepts `redirect_url` params (this last one can be omitted
    * if backend supports that).
    */
-  public async resendConfirmationEmail(params: SendPasswordConfirmationParams) {
-    return await this._options.http.makeRequest({
-      reqHeaders: this._getReqHeaders(),
-      getRespHeaders: this._getRespHeaders.bind(this),
-      url: `${this._options.apiUrl}/confirmation`,
-      method: "POST",
-      body: params,
-    });
+  public async resendConfirmationEmail(
+    body: SendPasswordConfirmationParams,
+    ...params: any[]
+  ) {
+    return await this._options.http.makeRequest(
+      {
+        reqHeaders: this._getReqHeaders(),
+        getRespHeaders: this._getRespHeaders.bind(this),
+        url: `${this._options.apiUrl}/confirmation`,
+        method: "POST",
+        body,
+      },
+      params
+    );
   }
 
   /**
