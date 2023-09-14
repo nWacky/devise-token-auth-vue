@@ -165,18 +165,21 @@ export class DeviseAuth<HttpParamsTy extends any[] = any[]> {
       return undefined;
     }
 
-    // TODO: delete cookie regardless what the api sent
-    //       when force: true?
-
-    return await this._options.http.makeRequest(
-      {
-        reqHeaders: this._getReqHeaders(),
-        getRespHeaders: this._getRespHeaders.bind(this),
-        url: `${this._options.apiUrl}/sign_out`,
-        method: "DELETE",
-      },
-      ...params
-    );
+    try {
+      await this._options.http.makeRequest(
+        {
+          reqHeaders: this._getReqHeaders(),
+          getRespHeaders: this._getRespHeaders.bind(this),
+          url: `${this._options.apiUrl}/sign_out`,
+          method: "DELETE",
+        },
+        ...params
+      );
+    } finally {
+      // if the cookie is no longer valid the user won't be able
+      // to use the app
+      this._options.cookie.set(null);
+    }
   }
 
   /**
