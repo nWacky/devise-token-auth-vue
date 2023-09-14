@@ -10,7 +10,30 @@ See the [auth plugin in playground/nuxt](./playground/nuxt/plugins/auth.ts) to g
 
 This probably happens due to the typescript not using package.json exports.
 
-I didn't really have time to debug this further, but for now adding this to `tsconfig.json` fixes the issue:
+### For nuxt
+
+Fix the issue with nuxt 3:
+
+```ts
+// nuxt.config.ts
+
+import { fileURLToPath } from "url";
+
+export default defineNuxtConfig({
+  alias: {
+    // otherwise there's a "module-not-found-error"
+    //
+    // see https://github.com/nWacky/devise-token-auth-vue
+    "devise-token-auth-vue": fileURLToPath(
+      new URL("node_modules/devise-token-auth-vue/src/", import.meta.url)
+    ),
+  },
+});
+```
+
+### fix manually in tsconfig.json
+
+I didn't really have time to debug this further, but for now the library to `tsconfig.json` fixes the issue:
 
 ```jsonc
 // tsconfig.json
@@ -18,6 +41,8 @@ I didn't really have time to debug this further, but for now adding this to `tsc
 {
   "compilerOptions": {
     "paths": {
+      // TODO: make sure other paths are not overwritten!
+
       "devise-token-auth-vue": ["node_modules/devise-token-auth-vue/src/"],
       "devise-token-auth-vue/*": ["node_modules/devise-token-auth-vue/src/*"]
     }
