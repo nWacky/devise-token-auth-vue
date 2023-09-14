@@ -24,8 +24,8 @@ export type MakeRequestParams = {
 
 export interface HttpInterface {
   // TODO: add response types
-  makeRequest<PItem, P extends Array<PItem>, RespTy = any>(
+  makeRequest<RespTy = any>(
     p: MakeRequestParams,
-    ...params: P
+    ...params: any[]
   ): Promise<RespTy>;
 }

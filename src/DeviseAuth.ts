@@ -79,7 +79,7 @@ export class DeviseAuth {
         method: "POST",
         body,
       },
-      params
+      ...params
     );
   }
 
@@ -101,7 +101,7 @@ export class DeviseAuth {
         getRespHeaders: this._getRespHeaders.bind(this),
         method: "DELETE",
       },
-      params
+      ...params
     );
   }
 
@@ -128,7 +128,7 @@ export class DeviseAuth {
         method: "PUT",
         body,
       },
-      params
+      ...params
     );
   }
 
@@ -153,7 +153,7 @@ export class DeviseAuth {
         method: "POST",
         body,
       },
-      params
+      ...params
     );
   }
 
@@ -175,7 +175,7 @@ export class DeviseAuth {
         url: `${this._options.apiUrl}/sign_out`,
         method: "DELETE",
       },
-      params
+      ...params
     );
   }
 
@@ -198,7 +198,7 @@ export class DeviseAuth {
         url: `${this._options.apiUrl}/validate_token`,
         method: "GET",
       },
-      params
+      ...params
     );
   }
 
@@ -230,7 +230,7 @@ export class DeviseAuth {
         method: "POST",
         body,
       },
-      params
+      ...params
     );
   }
 
@@ -256,7 +256,7 @@ export class DeviseAuth {
         method: "PUT",
         body,
       },
-      params
+      ...params
     );
   }
 
@@ -285,7 +285,7 @@ export class DeviseAuth {
         method: "GET",
         params: passwordParams,
       },
-      params
+      ...params
     );
   }
 
@@ -311,7 +311,7 @@ export class DeviseAuth {
         method: "POST",
         body,
       },
-      params
+      ...params
     );
   }
 
@@ -335,7 +335,7 @@ export class DeviseAuth {
         getRespHeaders: this._getRespHeaders.bind(this),
         ...reqParams,
       },
-      params
+      ...params
     );
   }
 
