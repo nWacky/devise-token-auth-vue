@@ -4,6 +4,8 @@ export type Method = "GET" | "POST" | "PUT" | "DELETE";
 
 export type GetRespHeadersTy = (h: AuthHeaders) => void;
 
+export type RequestParamsBodyTy = Partial<Record<string, string>> | string;
+
 export type MakeRequestParams = {
   url: string;
 
@@ -12,18 +14,18 @@ export type MakeRequestParams = {
   getRespHeaders: GetRespHeadersTy;
 
   /** Body to be passed as POST/PUT request body */
-  body?: Record<string, string | undefined>;
+  body?: RequestParamsBodyTy;
 
   /** GET/POST request params */
-  params?: Record<string, string | undefined>;
+  params?: RequestParamsBodyTy;
 
   method: Method;
 };
 
-export interface HttpInterface {
+export interface HttpInterface<ParamsTy extends any[] = any[]> {
   // TODO: add response types
-  makeRequest<PItem, P extends Array<PItem>, RespTy = any>(
+  makeRequest<RespTy = any>(
     p: MakeRequestParams,
-    ...params: P
+    ...params: ParamsTy
   ): Promise<RespTy>;
 }

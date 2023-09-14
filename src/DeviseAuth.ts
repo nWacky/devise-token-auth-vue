@@ -12,8 +12,8 @@ import type {
 
 import { AuthHeaderKeys } from "./types";
 
-export class DeviseAuth {
-  _options?: DeviseAuthOptions;
+export class DeviseAuth<HttpParamsTy extends any[] = any[]> {
+  _options?: DeviseAuthOptions<HttpParamsTy>;
 
   constructor() {}
 
@@ -66,7 +66,7 @@ export class DeviseAuth {
    * redirect to the URL specified in `confirm_success_url`.
    */
   // TODO: pass params as not any
-  public async registerEmail(body: LoginReqParams, ...params: any[]) {
+  public async registerEmail(body: LoginReqParams, ...params: HttpParamsTy) {
     if (!this._options) {
       return undefined;
     }
@@ -79,7 +79,7 @@ export class DeviseAuth {
         method: "POST",
         body,
       },
-      params
+      ...params
     );
   }
 
@@ -89,7 +89,7 @@ export class DeviseAuth {
    * This route will destroy users identified by their
    * `uid`, `access-token` and `client` headers.
    */
-  public async deleteAccount(...params: any[]) {
+  public async deleteAccount(...params: HttpParamsTy) {
     if (!this._options) {
       return undefined;
     }
@@ -101,7 +101,7 @@ export class DeviseAuth {
         getRespHeaders: this._getRespHeaders.bind(this),
         method: "DELETE",
       },
-      params
+      ...params
     );
   }
 
@@ -115,7 +115,7 @@ export class DeviseAuth {
    * The backend may also check the `current_password` param is checked before either
    * any update or only if the request updates user password.
    */
-  public async updateAccount(body: UpdateReqParams, ...params: any[]) {
+  public async updateAccount(body: UpdateReqParams, ...params: HttpParamsTy) {
     if (!this._options) {
       return undefined;
     }
@@ -128,7 +128,7 @@ export class DeviseAuth {
         method: "PUT",
         body,
       },
-      params
+      ...params
     );
   }
 
@@ -140,7 +140,7 @@ export class DeviseAuth {
    * on successful login along with the `access-token`
    * and `client` in the header of the response.
    */
-  public async signIn(body: LoginReqParams, ...params: any[]) {
+  public async signIn(body: LoginReqParams, ...params: HttpParamsTy) {
     if (!this._options) {
       return undefined;
     }
@@ -153,30 +153,33 @@ export class DeviseAuth {
         method: "POST",
         body,
       },
-      params
+      ...params
     );
   }
 
   /**
    * Use this route to end the user's current session. This route will invalidate the user's authentication token. You must pass in uid, client, and access-token in the request headers.
    */
-  public async signOut(...params: any[]) {
+  public async signOut(...params: HttpParamsTy) {
     if (!this._options) {
       return undefined;
     }
 
-    // TODO: delete cookie regardless what the api sent
-    //       when force: true?
-
-    return await this._options.http.makeRequest(
-      {
-        reqHeaders: this._getReqHeaders(),
-        getRespHeaders: this._getRespHeaders.bind(this),
-        url: `${this._options.apiUrl}/sign_out`,
-        method: "DELETE",
-      },
-      params
-    );
+    try {
+      await this._options.http.makeRequest(
+        {
+          reqHeaders: this._getReqHeaders(),
+          getRespHeaders: this._getRespHeaders.bind(this),
+          url: `${this._options.apiUrl}/sign_out`,
+          method: "DELETE",
+        },
+        ...params
+      );
+    } finally {
+      // if the cookie is no longer valid the user won't be able
+      // to use the app
+      this._options.cookie.set(null);
+    }
   }
 
   /**
@@ -186,7 +189,7 @@ export class DeviseAuth {
    *
    * Returns a `User` if all tokens are valid
    */
-  public async validateToken(...params: any[]) {
+  public async validateToken(...params: HttpParamsTy) {
     if (!this._options) {
       return undefined;
     }
@@ -198,7 +201,7 @@ export class DeviseAuth {
         url: `${this._options.apiUrl}/validate_token`,
         method: "GET",
       },
-      params
+      ...params
     );
   }
 
@@ -216,7 +219,7 @@ export class DeviseAuth {
    */
   public async sendPasswordConfirmation(
     body: SendPasswordConfirmationParams,
-    ...params: any[]
+    ...params: HttpParamsTy
   ) {
     if (!this._options) {
       return undefined;
@@ -230,7 +233,7 @@ export class DeviseAuth {
         method: "POST",
         body,
       },
-      params
+      ...params
     );
   }
 
@@ -243,7 +246,10 @@ export class DeviseAuth {
    *
    * It also checks `current_password` (if enabled on the backend, disabled by default).
    */
-  public async changePassword(body: UpdatePasswordParams, ...params: any[]) {
+  public async changePassword(
+    body: UpdatePasswordParams,
+    ...params: HttpParamsTy
+  ) {
     if (!this._options) {
       return undefined;
     }
@@ -256,7 +262,7 @@ export class DeviseAuth {
         method: "PUT",
         body,
       },
-      params
+      ...params
     );
   }
 
@@ -271,7 +277,7 @@ export class DeviseAuth {
    */
   public async resetPassword(
     passwordParams: ResetPasswordParams,
-    ...params: any[]
+    ...params: HttpParamsTy
   ) {
     if (!this._options) {
       return undefined;
@@ -285,7 +291,7 @@ export class DeviseAuth {
         method: "GET",
         params: passwordParams,
       },
-      params
+      ...params
     );
   }
 
@@ -297,7 +303,7 @@ export class DeviseAuth {
    */
   public async resendConfirmationEmail(
     body: SendPasswordConfirmationParams,
-    ...params: any[]
+    ...params: HttpParamsTy
   ) {
     if (!this._options) {
       return undefined;
@@ -311,7 +317,7 @@ export class DeviseAuth {
         method: "POST",
         body,
       },
-      params
+      ...params
     );
   }
 
@@ -324,7 +330,7 @@ export class DeviseAuth {
    * Similar to `axios({ method: '...' })` and `$fetch(url, { method: '...' })`,
    * but automatically adds auth headers
    */
-  public async fetch<T>(reqParams: FetchRequestParams, ...params: T[]) {
+  public async fetch(reqParams: FetchRequestParams, ...params: HttpParamsTy) {
     if (!this._options) {
       return undefined;
     }
@@ -335,7 +341,7 @@ export class DeviseAuth {
         getRespHeaders: this._getRespHeaders.bind(this),
         ...reqParams,
       },
-      params
+      ...params
     );
   }
 

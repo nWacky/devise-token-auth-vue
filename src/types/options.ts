@@ -3,7 +3,7 @@ import { CookieStorageInterface } from "../CookieStorageInterface";
 import type { HttpInterface } from "../HttpInterface";
 
 // TODO: provide default options
-export type DeviseAuthOptions = {
+export type DeviseAuthOptions<HttpParamsTy extends any[] = any[]> = {
   /**
    * Api url
    *
@@ -11,7 +11,7 @@ export type DeviseAuthOptions = {
    */
   apiUrl: string;
 
-  http: HttpInterface;
+  http: HttpInterface<HttpParamsTy>;
 
   cookie: CookieStorageInterface;
 };
