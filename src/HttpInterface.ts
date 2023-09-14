@@ -22,10 +22,10 @@ export type MakeRequestParams = {
   method: Method;
 };
 
-export interface HttpInterface {
+export interface HttpInterface<ParamsTy extends any[] = any[]> {
   // TODO: add response types
   makeRequest<RespTy = any>(
     p: MakeRequestParams,
-    ...params: any[]
+    ...params: ParamsTy
   ): Promise<RespTy>;
 }
