@@ -13,13 +13,19 @@ import type {
 import { AuthHeaderKeys } from "./types";
 
 export class DeviseAuth {
-  _options: DeviseAuthOptions;
+  _options?: DeviseAuthOptions;
 
-  constructor(o: DeviseAuthOptions) {
+  constructor() {}
+
+  init(o: DeviseAuthOptions) {
     this._options = o;
   }
 
   _getReqHeaders(): AuthHeaders | undefined {
+    if (!this._options) {
+      return undefined;
+    }
+
     let h = this._options.cookie.get();
 
     if (h) {
@@ -30,6 +36,10 @@ export class DeviseAuth {
   }
 
   _getRespHeaders(headers: AuthHeaders & Record<string, string>) {
+    if (!this._options) {
+      return undefined;
+    }
+
     const authHeaders: AuthHeaders = {};
 
     const headerKeys = AuthHeaderKeys as Readonly<string[]>;
@@ -57,6 +67,10 @@ export class DeviseAuth {
    */
   // TODO: pass params as not any
   public async registerEmail(body: LoginReqParams, ...params: any[]) {
+    if (!this._options) {
+      return undefined;
+    }
+
     return await this._options.http.makeRequest(
       {
         url: this._options.apiUrl,
@@ -76,6 +90,10 @@ export class DeviseAuth {
    * `uid`, `access-token` and `client` headers.
    */
   public async deleteAccount(...params: any[]) {
+    if (!this._options) {
+      return undefined;
+    }
+
     return await this._options.http.makeRequest(
       {
         url: this._options.apiUrl,
@@ -98,6 +116,10 @@ export class DeviseAuth {
    * any update or only if the request updates user password.
    */
   public async updateAccount(body: UpdateReqParams, ...params: any[]) {
+    if (!this._options) {
+      return undefined;
+    }
+
     return await this._options.http.makeRequest(
       {
         url: this._options.apiUrl,
@@ -119,6 +141,10 @@ export class DeviseAuth {
    * and `client` in the header of the response.
    */
   public async signIn(body: LoginReqParams, ...params: any[]) {
+    if (!this._options) {
+      return undefined;
+    }
+
     return await this._options.http.makeRequest(
       {
         url: `${this._options.apiUrl}/sign_in`,
@@ -135,6 +161,10 @@ export class DeviseAuth {
    * Use this route to end the user's current session. This route will invalidate the user's authentication token. You must pass in uid, client, and access-token in the request headers.
    */
   public async signOut(...params: any[]) {
+    if (!this._options) {
+      return undefined;
+    }
+
     // TODO: delete cookie regardless what the api sent
     //       when force: true?
 
@@ -157,6 +187,10 @@ export class DeviseAuth {
    * Returns a `User` if all tokens are valid
    */
   public async validateToken(...params: any[]) {
+    if (!this._options) {
+      return undefined;
+    }
+
     return await this._options.http.makeRequest(
       {
         reqHeaders: this._getReqHeaders(),
@@ -184,6 +218,10 @@ export class DeviseAuth {
     body: SendPasswordConfirmationParams,
     ...params: any[]
   ) {
+    if (!this._options) {
+      return undefined;
+    }
+
     return await this._options.http.makeRequest(
       {
         reqHeaders: this._getReqHeaders(),
@@ -206,6 +244,10 @@ export class DeviseAuth {
    * It also checks `current_password` (if enabled on the backend, disabled by default).
    */
   public async changePassword(body: UpdatePasswordParams, ...params: any[]) {
+    if (!this._options) {
+      return undefined;
+    }
+
     return await this._options.http.makeRequest(
       {
         reqHeaders: this._getReqHeaders(),
@@ -231,6 +273,10 @@ export class DeviseAuth {
     passwordParams: ResetPasswordParams,
     ...params: any[]
   ) {
+    if (!this._options) {
+      return undefined;
+    }
+
     return await this._options.http.makeRequest(
       {
         reqHeaders: this._getReqHeaders(),
@@ -253,6 +299,10 @@ export class DeviseAuth {
     body: SendPasswordConfirmationParams,
     ...params: any[]
   ) {
+    if (!this._options) {
+      return undefined;
+    }
+
     return await this._options.http.makeRequest(
       {
         reqHeaders: this._getReqHeaders(),
@@ -275,6 +325,10 @@ export class DeviseAuth {
    * but automatically adds auth headers
    */
   public async fetch<T>(reqParams: FetchRequestParams, ...params: T[]) {
+    if (!this._options) {
+      return undefined;
+    }
+
     return await this._options.http.makeRequest(
       {
         reqHeaders: this._getReqHeaders(),
@@ -292,6 +346,10 @@ export class DeviseAuth {
    * use `validateToken`
    */
   public hasAuthToken(): boolean {
+    if (!this._options) {
+      return false;
+    }
+
     const tokens = this._options.cookie.get();
 
     if (!tokens) {
