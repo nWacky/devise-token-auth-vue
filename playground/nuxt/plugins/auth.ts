@@ -29,7 +29,7 @@ class HttpProxy<PItem = any, P extends Array<PItem> = PItem[]>
     return resp._data;
   }
 
-  getRequestHeaders(resp: FetchResponse<any>) {
+  getResponseHeaders(resp: FetchResponse<any>) {
     return Object.fromEntries(resp.headers.entries());
   }
 }

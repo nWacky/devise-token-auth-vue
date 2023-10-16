@@ -21,8 +21,9 @@ export type MakeRequestParams = {
 };
 
 export interface HttpInterface<ParamsTy extends any[], RespTy> {
-  // TODO: add response types
   makeRequest(p: MakeRequestParams, ...params: ParamsTy): Promise<RespTy>;
 
-  getRequestHeaders(resp: RespTy): Record<string, string>;
+  getResponseHeaders(resp: RespTy): Record<string, string>;
+
+  getResponseStatus(resp: RespTy): number | null;
 }

@@ -40,7 +40,7 @@ export class DeviseAuth<HttpParamsTy extends any[], HttpRespTy> {
       return undefined;
     }
 
-    const headers = this._options.http.getRequestHeaders(resp);
+    const headers = this._options.http.getResponseHeaders(resp);
 
     const authHeaders: AuthHeaders = {};
 
@@ -374,6 +374,12 @@ export class DeviseAuth<HttpParamsTy extends any[], HttpRespTy> {
     );
 
     this._processRespHeaders(resp);
+
+    const respStatus = this._options.http.getResponseStatus(resp);
+
+    if (respStatus === 401) {
+      // todo: call callback on unauthorized
+    }
 
     return resp;
   }
