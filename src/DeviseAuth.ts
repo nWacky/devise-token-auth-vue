@@ -12,12 +12,12 @@ import type {
 
 import { AuthHeaderKeys } from "./types";
 
-export class DeviseAuth<HttpParamsTy extends any[] = any[]> {
-  _options?: DeviseAuthOptions<HttpParamsTy>;
+export class DeviseAuth<HttpParamsTy extends any[], HttpRespTy> {
+  _options?: DeviseAuthOptions<HttpParamsTy, HttpRespTy>;
 
   constructor() {}
 
-  init(o: DeviseAuthOptions) {
+  init(o: DeviseAuthOptions<HttpParamsTy, HttpRespTy>) {
     this._options = o;
   }
 
