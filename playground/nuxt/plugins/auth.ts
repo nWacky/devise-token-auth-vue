@@ -3,6 +3,8 @@ import {
   MakeRequestParams,
 } from "devise-token-auth-vue/HttpInterface";
 
+import { FetchResponse } from "ofetch";
+
 import { CookieStorageInterface } from "devise-token-auth-vue/CookieStorageInterface";
 
 import { vueDeviseAuth } from "devise-token-auth-vue";
@@ -10,11 +12,10 @@ import { AuthHeaders } from "devise-token-auth-vue/types";
 
 const baseURL = "https://example.net";
 
-class HttpProxy implements HttpInterface {
-  async makeRequest<PItem = any, P extends Array<PItem> = PItem[]>(
-    p: MakeRequestParams,
-    ...params: P
-  ): Promise<any> {
+class HttpProxy<PItem = any, P extends Array<PItem> = PItem[]>
+  implements HttpInterface<P, FetchResponse<any>>
+{
+  async makeRequest(p: MakeRequestParams, ...params: P): Promise<any> {
     console.log("make request: ", p, params);
     const resp = await $fetch.raw(p.url, {
       baseURL,
@@ -25,9 +26,11 @@ class HttpProxy implements HttpInterface {
 
     console.log("resp: ", resp);
 
-    p.getRespHeaders(Object.fromEntries(resp.headers.entries()));
-
     return resp._data;
+  }
+
+  getRequestHeaders(resp: FetchResponse<any>) {
+    return Object.fromEntries(resp.headers.entries());
   }
 }
 
