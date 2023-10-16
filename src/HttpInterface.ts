@@ -11,8 +11,6 @@ export type MakeRequestParams = {
 
   reqHeaders?: AuthHeaders;
 
-  getRespHeaders: GetRespHeadersTy;
-
   /** Body to be passed as POST/PUT request body */
   body?: RequestParamsBodyTy;
 
