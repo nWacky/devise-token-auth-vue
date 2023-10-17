@@ -12,10 +12,13 @@ import { AuthHeaders } from "devise-token-auth-vue/types";
 
 const baseURL = "https://example.net";
 
-class HttpProxy<PItem = any, P extends Array<PItem> = PItem[]>
-  implements HttpInterface<P, FetchResponse<any>>
-{
-  async makeRequest(p: MakeRequestParams, ...params: P): Promise<any> {
+type HttpProxyParams = [];
+
+class HttpProxy implements HttpInterface<HttpProxyParams, FetchResponse<any>> {
+  async makeRequest(
+    p: MakeRequestParams,
+    ...params: HttpProxyParams
+  ): Promise<any> {
     console.log("make request: ", p, params);
     const resp = await $fetch.raw(p.url, {
       baseURL,
@@ -31,6 +34,10 @@ class HttpProxy<PItem = any, P extends Array<PItem> = PItem[]>
 
   getResponseHeaders(resp: FetchResponse<any>) {
     return Object.fromEntries(resp.headers.entries());
+  }
+
+  getResponseStatus(resp: FetchResponse<any>): number | null {
+    return resp.status;
   }
 }
 
