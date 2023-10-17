@@ -13,7 +13,7 @@ const registerEmail = () => {
 };
 
 const validate = async () => {
-  const resp = await auth?.validateToken();
+  const resp = await auth?.validateToken([2], "test");
 
   console.log("validate resp: ", resp);
 };

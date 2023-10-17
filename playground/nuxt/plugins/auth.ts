@@ -2,6 +2,7 @@ import {
   HttpInterface,
   MakeRequestParams,
 } from "devise-token-auth-vue/HttpInterface";
+import { DeviseAuthOptions } from "devise-token-auth-vue/src/types/options";
 
 import { FetchResponse } from "ofetch";
 
@@ -67,9 +68,15 @@ class CookieStorage implements CookieStorageInterface {
 }
 
 export default defineNuxtPlugin((nuxtApp) => {
-  nuxtApp.vueApp.use(vueDeviseAuth, {
-    apiUrl: "/api/v1/auth",
-    http: new HttpProxy(),
-    cookie: new CookieStorage(),
-  });
+  nuxtApp.vueApp.use<DeviseAuthOptions<HttpProxyParams, FetchResponse<any>>>(
+    vueDeviseAuth,
+    {
+      apiUrl: "/api/v1/auth",
+      http: new HttpProxy(),
+      cookie: new CookieStorage(),
+      onUnauthorized: () => {
+        // nuxtApp.vueApp.$nuxt.$router.push("/login");
+      },
+    }
+  );
 });

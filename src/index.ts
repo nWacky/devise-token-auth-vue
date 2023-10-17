@@ -6,7 +6,11 @@ import type { DeviseAuthOptions } from "./types/options";
 export const AuthInstanceObj = new DeviseAuth();
 
 export const vueDeviseAuth = {
-  install(app: App, options: DeviseAuthOption) {
+  // TODO: better type params
+  install<HttpParamsTy extends any[], RespTy>(
+    app: App,
+    options: DeviseAuthOptions<HttpParamsTy, RespTy>
+  ) {
     AuthInstanceObj.init(options);
   },
 };
