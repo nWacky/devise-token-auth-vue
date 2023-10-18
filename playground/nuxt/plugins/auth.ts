@@ -2,9 +2,8 @@ import {
   HttpInterface,
   MakeRequestParams,
 } from "devise-token-auth-vue/HttpInterface";
-import { DeviseAuthOptions } from "devise-token-auth-vue/src/types/options";
 
-import { FetchResponse } from "ofetch";
+import { FetchResponse, FetchError } from "ofetch";
 
 import { CookieStorageInterface } from "devise-token-auth-vue/CookieStorageInterface";
 
@@ -38,8 +37,12 @@ class HttpProxy implements HttpInterface<HttpProxyParams, FetchResponse<any>> {
     return Object.fromEntries(resp.headers.entries());
   }
 
-  getResponseStatus(resp: FetchResponse<any>): number | null {
-    return resp.status;
+  checkRequestErrorIsUnauthorized(e: any): boolean {
+    if (e instanceof FetchError && e.status === 401) {
+      return true;
+    }
+
+    return false;
   }
 }
 
