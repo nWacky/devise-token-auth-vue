@@ -71,10 +71,13 @@ class CookieStorage implements CookieStorageInterface {
   }
 }
 
-// usage composable has to be declared here to have a concrete
-// type.
-// Otherwise typescript doesn't know if initializer ran, and
-// `useAuth` would have to accept any
+// `useAuth` composable has to be declared here to return a concrete type.
+//
+// Typescript doesn't know if initializer ran, and, if declared in plugin,
+//   `useAuth` would have to return any as a result.
+//
+// In nuxt, this function declaration could be moved to `composables` folder
+//   to enable auto import.
 export const useAuth = useAuthCreate<HttpProxyParams, FetchResponse<any>>();
 
 export default defineNuxtPlugin((nuxtApp) => {
@@ -82,10 +85,6 @@ export default defineNuxtPlugin((nuxtApp) => {
     apiUrl: "/api/v1/auth",
     http: new HttpProxy(),
     cookie: new CookieStorage(),
-    // todo: make optional
-    onUnauthorized: () => {
-      // nuxtApp.vueApp.$nuxt.$router.push("/login");
-    },
   });
 
   nuxtApp.vueApp.use(vueDeviseAuth, {
