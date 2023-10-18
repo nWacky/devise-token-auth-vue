@@ -25,5 +25,6 @@ export interface HttpInterface<ParamsTy extends any[], RespTy> {
 
   getResponseHeaders(resp: RespTy): Record<string, string>;
 
-  getResponseStatus(resp: RespTy): number | null;
+  /** Return `true` if error from `makeRequest` is 401 (Unauthorized) */
+  checkRequestErrorIsUnauthorized(error: any): boolean;
 }

@@ -6,7 +6,7 @@ Nuxt 3/Vue 3 compatible API wrapper for [devise_token_auth](https://github.com/l
 
 The api in this repository in not stable.
 
-When installing, add commit hash
+When installing, add a commit hash
 
 ```jsonc
 // package.json

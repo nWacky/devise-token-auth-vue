@@ -358,32 +358,41 @@ export class DeviseAuth<HttpParamsTy extends any[], HttpRespTy> {
    * Similar to `axios({ method: '...' })` and `$fetch(url, { method: '...' })`,
    * but automatically adds auth headers
    */
-  public async fetch(reqParams: FetchRequestParams, ...params: HttpParamsTy) {
+  public async fetch(
+    reqParams: FetchRequestParams,
+    ...params: HttpParamsTy
+  ): Promise<HttpRespTy | undefined> {
     if (!this._options) {
       return undefined;
     }
 
-    const resp = await this._options.http.makeRequest(
-      {
-        reqHeaders: this._getReqHeaders(),
-        ...reqParams,
-      },
-      ...params
-    );
+    try {
+      const resp = await this._options.http.makeRequest(
+        {
+          reqHeaders: this._getReqHeaders(),
+          ...reqParams,
+        },
+        ...params
+      );
 
-    this._processRespHeaders(resp);
+      this._processRespHeaders(resp);
 
-    const respStatus = this._options.http.getResponseStatus(resp);
+      return resp;
+    } catch (e) {
+      const is401 = this._options.http.checkRequestErrorIsUnauthorized(e);
 
-    if (respStatus === 401) {
-      this._options.cookie.set(null);
+      if (is401) {
+        this._options.cookie.set(null);
 
-      if (this._options.onUnauthorized) {
-        this._options.onUnauthorized();
+        if (this._options.onUnauthorized) {
+          this._options.onUnauthorized();
+        }
+
+        return undefined;
       }
-    }
 
-    return resp;
+      throw e;
+    }
   }
 
   /**
