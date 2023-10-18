@@ -376,9 +376,11 @@ export class DeviseAuth<HttpParamsTy extends any[], HttpRespTy> {
     const respStatus = this._options.http.getResponseStatus(resp);
 
     if (respStatus === 401) {
-      this._options.onUnauthorized();
-
       this._options.cookie.set(null);
+
+      if (this._options.onUnauthorized) {
+        this._options.onUnauthorized();
+      }
     }
 
     return resp;

@@ -20,5 +20,5 @@ export type DeviseAuthOptions<HttpParamsTy extends any[], RespTy> = {
    *
    * Useful for redirecting back to login
    */
-  onUnauthorized: VoidFunction;
+  onUnauthorized?: VoidFunction;
 };
