@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useAuth } from "devise-token-auth-vue";
+import { useAuth } from "./plugins/auth";
 
 const auth = useAuth();
 
@@ -13,7 +13,7 @@ const registerEmail = () => {
 };
 
 const validate = async () => {
-  const resp = await auth?.validateToken([2], "test");
+  const resp = await auth?.validateToken();
 
   console.log("validate resp: ", resp);
 };

@@ -8,7 +8,7 @@ import { FetchResponse } from "ofetch";
 
 import { CookieStorageInterface } from "devise-token-auth-vue/CookieStorageInterface";
 
-import { vueDeviseAuth } from "devise-token-auth-vue";
+import { vueDeviseAuth, useAuthCreate } from "devise-token-auth-vue";
 import { DeviseAuth } from "devise-token-auth-vue/DeviseAuth";
 import { AuthHeaders } from "devise-token-auth-vue/types";
 
@@ -68,6 +68,12 @@ class CookieStorage implements CookieStorageInterface {
   }
 }
 
+// usage composable has to be declared here to have a concrete
+// type.
+// Otherwise typescript doesn't know if initializer ran, and
+// `useAuth` would have to accept any
+export const useAuth = useAuthCreate<HttpProxyParams, FetchResponse<any>>();
+
 export default defineNuxtPlugin((nuxtApp) => {
   const authInstance = new DeviseAuth({
     apiUrl: "/api/v1/auth",
@@ -79,10 +85,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     },
   });
 
-  nuxtApp.vueApp.use<DeviseAuthOptions<HttpProxyParams, FetchResponse<any>>>(
-    vueDeviseAuth,
-    {
-      authInstance,
-    }
-  );
+  nuxtApp.vueApp.use(vueDeviseAuth, {
+    authInstance,
+  });
 });

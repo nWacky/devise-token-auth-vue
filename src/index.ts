@@ -15,19 +15,21 @@ export const vueDeviseAuth = {
   },
 };
 
-export const useAuth = () => {
-  const authInstance = inject<DeviseAuth<HttpParamsTy, RespTy>>(
-    DEFAULT_AUTH_INSTANCE_KEY
-  );
-
-  if (!authInstance) {
-    console.error(
-      "devise-token-auth-vue: No auth instance provided",
-      "Check that 'devise-token-auth-vue' plugin is installed and initialized"
+export const useAuthCreate = <HttpParamsTy extends any[], RespTy>() => {
+  return () => {
+    const authInstance = inject<DeviseAuth<HttpParamsTy, RespTy>>(
+      DEFAULT_AUTH_INSTANCE_KEY
     );
 
-    throw new ReferenceError("No auth instance provided");
-  }
+    if (!authInstance) {
+      console.error(
+        "devise-token-auth-vue: No auth instance provided",
+        "Check that 'devise-token-auth-vue' plugin is installed and initialized"
+      );
 
-  return authInstance;
+      throw new ReferenceError("No auth instance provided");
+    }
+
+    return authInstance;
+  };
 };
