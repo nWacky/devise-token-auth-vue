@@ -15,9 +15,7 @@ import { AuthHeaderKeys } from "./types";
 export class DeviseAuth<HttpParamsTy extends any[], HttpRespTy> {
   _options?: DeviseAuthOptions<HttpParamsTy, HttpRespTy>;
 
-  constructor() {}
-
-  init(o: DeviseAuthOptions<HttpParamsTy, HttpRespTy>) {
+  constructor(o: DeviseAuthOptions<HttpParamsTy, HttpRespTy>) {
     this._options = o;
   }
 
