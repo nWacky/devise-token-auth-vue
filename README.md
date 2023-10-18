@@ -2,9 +2,24 @@
 
 Nuxt 3/Vue 3 compatible API wrapper for [devise_token_auth](https://github.com/lynndylanhurley/devise_token_auth)
 
+## Warning: unstable api
+
+The api in this repository in not stable.
+
+When installing, add a commit hash
+
+```jsonc
+// package.json
+{
+  "dependencies": {
+    "devise-token-auth-vue": "github:nWacky/devise-token-auth-vue#<commit_hash>"
+  }
+}
+```
+
 ## Getting started
 
-See the [auth plugin in playground/nuxt](./playground/nuxt/plugins/auth.ts) to get started
+See the [auth plugin in playground/nuxt](./playground/nuxt/plugins/auth.ts) for usage example
 
 ### Typescript "module not found" error
 

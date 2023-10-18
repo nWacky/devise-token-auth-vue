@@ -1,4 +1,4 @@
-import type { MakeRequestParams } from "./HttpInterface";
+import type { MakeRequestParams } from "../HttpInterface";
 
 export const AuthHeaderKeys = ["uid", "client", "access-token"] as const;
 

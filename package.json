@@ -9,7 +9,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "cd playground/nuxt && npm run dev",
     "build": "npm run clean && npx tsc --outDir ./build",
-    "clean": "rm -r build"
+    "clean": "rm -r build",
+    "typecheck": "cd playground/nuxt && npx nuxi typecheck"
   },
   "keywords": [
     "vue",

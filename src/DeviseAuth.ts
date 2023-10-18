@@ -12,12 +12,10 @@ import type {
 
 import { AuthHeaderKeys } from "./types";
 
-export class DeviseAuth<HttpParamsTy extends any[] = any[]> {
-  _options?: DeviseAuthOptions<HttpParamsTy>;
+export class DeviseAuth<HttpParamsTy extends any[], HttpRespTy> {
+  _options?: DeviseAuthOptions<HttpParamsTy, HttpRespTy>;
 
-  constructor() {}
-
-  init(o: DeviseAuthOptions) {
+  constructor(o: DeviseAuthOptions<HttpParamsTy, HttpRespTy>) {
     this._options = o;
   }
 
@@ -35,10 +33,12 @@ export class DeviseAuth<HttpParamsTy extends any[] = any[]> {
     return undefined;
   }
 
-  _getRespHeaders(headers: AuthHeaders & Record<string, string>) {
+  _processRespHeaders(resp: HttpRespTy) {
     if (!this._options) {
       return undefined;
     }
+
+    const headers = this._options.http.getResponseHeaders(resp);
 
     const authHeaders: AuthHeaders = {};
 
@@ -71,16 +71,19 @@ export class DeviseAuth<HttpParamsTy extends any[] = any[]> {
       return undefined;
     }
 
-    return await this._options.http.makeRequest(
+    const resp = await this._options.http.makeRequest(
       {
         url: this._options.apiUrl,
         reqHeaders: this._getReqHeaders(),
-        getRespHeaders: this._getRespHeaders.bind(this),
         method: "POST",
         body,
       },
       ...params
     );
+
+    this._processRespHeaders(resp);
+
+    return resp;
   }
 
   /**
@@ -94,15 +97,18 @@ export class DeviseAuth<HttpParamsTy extends any[] = any[]> {
       return undefined;
     }
 
-    return await this._options.http.makeRequest(
+    const resp = await this._options.http.makeRequest(
       {
         url: this._options.apiUrl,
         reqHeaders: this._getReqHeaders(),
-        getRespHeaders: this._getRespHeaders.bind(this),
         method: "DELETE",
       },
       ...params
     );
+
+    this._processRespHeaders(resp);
+
+    return resp;
   }
 
   /**
@@ -120,16 +126,19 @@ export class DeviseAuth<HttpParamsTy extends any[] = any[]> {
       return undefined;
     }
 
-    return await this._options.http.makeRequest(
+    const resp = await this._options.http.makeRequest(
       {
         url: this._options.apiUrl,
         reqHeaders: this._getReqHeaders(),
-        getRespHeaders: this._getRespHeaders.bind(this),
         method: "PUT",
         body,
       },
       ...params
     );
+
+    this._processRespHeaders(resp);
+
+    return resp;
   }
 
   /**
@@ -145,16 +154,19 @@ export class DeviseAuth<HttpParamsTy extends any[] = any[]> {
       return undefined;
     }
 
-    return await this._options.http.makeRequest(
+    const resp = await this._options.http.makeRequest(
       {
         url: `${this._options.apiUrl}/sign_in`,
         reqHeaders: this._getReqHeaders(),
-        getRespHeaders: this._getRespHeaders.bind(this),
         method: "POST",
         body,
       },
       ...params
     );
+
+    this._processRespHeaders(resp);
+
+    return resp;
   }
 
   /**
@@ -166,15 +178,16 @@ export class DeviseAuth<HttpParamsTy extends any[] = any[]> {
     }
 
     try {
-      await this._options.http.makeRequest(
+      const resp = await this._options.http.makeRequest(
         {
           reqHeaders: this._getReqHeaders(),
-          getRespHeaders: this._getRespHeaders.bind(this),
           url: `${this._options.apiUrl}/sign_out`,
           method: "DELETE",
         },
         ...params
       );
+
+      this._processRespHeaders(resp);
     } finally {
       // if the cookie is no longer valid the user won't be able
       // to use the app
@@ -194,15 +207,18 @@ export class DeviseAuth<HttpParamsTy extends any[] = any[]> {
       return undefined;
     }
 
-    return await this._options.http.makeRequest(
+    const resp = await this._options.http.makeRequest(
       {
         reqHeaders: this._getReqHeaders(),
-        getRespHeaders: this._getRespHeaders.bind(this),
         url: `${this._options.apiUrl}/validate_token`,
         method: "GET",
       },
       ...params
     );
+
+    this._processRespHeaders(resp);
+
+    return resp;
   }
 
   /**
@@ -225,16 +241,19 @@ export class DeviseAuth<HttpParamsTy extends any[] = any[]> {
       return undefined;
     }
 
-    return await this._options.http.makeRequest(
+    const resp = await this._options.http.makeRequest(
       {
         reqHeaders: this._getReqHeaders(),
-        getRespHeaders: this._getRespHeaders.bind(this),
         url: `${this._options.apiUrl}/password`,
         method: "POST",
         body,
       },
       ...params
     );
+
+    this._processRespHeaders(resp);
+
+    return resp;
   }
 
   /**
@@ -254,16 +273,19 @@ export class DeviseAuth<HttpParamsTy extends any[] = any[]> {
       return undefined;
     }
 
-    return await this._options.http.makeRequest(
+    const resp = await this._options.http.makeRequest(
       {
         reqHeaders: this._getReqHeaders(),
-        getRespHeaders: this._getRespHeaders.bind(this),
         url: `${this._options.apiUrl}/password`,
         method: "PUT",
         body,
       },
       ...params
     );
+
+    this._processRespHeaders(resp);
+
+    return resp;
   }
 
   /**
@@ -283,16 +305,19 @@ export class DeviseAuth<HttpParamsTy extends any[] = any[]> {
       return undefined;
     }
 
-    return await this._options.http.makeRequest(
+    const resp = await this._options.http.makeRequest(
       {
         reqHeaders: this._getReqHeaders(),
-        getRespHeaders: this._getRespHeaders.bind(this),
         url: `${this._options.apiUrl}/password/edit`,
         method: "GET",
         params: passwordParams,
       },
       ...params
     );
+
+    this._processRespHeaders(resp);
+
+    return resp;
   }
 
   /**
@@ -309,16 +334,19 @@ export class DeviseAuth<HttpParamsTy extends any[] = any[]> {
       return undefined;
     }
 
-    return await this._options.http.makeRequest(
+    const resp = await this._options.http.makeRequest(
       {
         reqHeaders: this._getReqHeaders(),
-        getRespHeaders: this._getRespHeaders.bind(this),
         url: `${this._options.apiUrl}/confirmation`,
         method: "POST",
         body,
       },
       ...params
     );
+
+    this._processRespHeaders(resp);
+
+    return resp;
   }
 
   /**
@@ -330,19 +358,41 @@ export class DeviseAuth<HttpParamsTy extends any[] = any[]> {
    * Similar to `axios({ method: '...' })` and `$fetch(url, { method: '...' })`,
    * but automatically adds auth headers
    */
-  public async fetch(reqParams: FetchRequestParams, ...params: HttpParamsTy) {
+  public async fetch(
+    reqParams: FetchRequestParams,
+    ...params: HttpParamsTy
+  ): Promise<HttpRespTy | undefined> {
     if (!this._options) {
       return undefined;
     }
 
-    return await this._options.http.makeRequest(
-      {
-        reqHeaders: this._getReqHeaders(),
-        getRespHeaders: this._getRespHeaders.bind(this),
-        ...reqParams,
-      },
-      ...params
-    );
+    try {
+      const resp = await this._options.http.makeRequest(
+        {
+          reqHeaders: this._getReqHeaders(),
+          ...reqParams,
+        },
+        ...params
+      );
+
+      this._processRespHeaders(resp);
+
+      return resp;
+    } catch (e) {
+      const is401 = this._options.http.checkRequestErrorIsUnauthorized(e);
+
+      if (is401) {
+        this._options.cookie.set(null);
+
+        if (this._options.onUnauthorized) {
+          this._options.onUnauthorized();
+        }
+
+        return undefined;
+      }
+
+      throw e;
+    }
   }
 
   /**

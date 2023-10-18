@@ -3,17 +3,22 @@ import {
   MakeRequestParams,
 } from "devise-token-auth-vue/HttpInterface";
 
+import { FetchResponse, FetchError } from "ofetch";
+
 import { CookieStorageInterface } from "devise-token-auth-vue/CookieStorageInterface";
 
-import { vueDeviseAuth } from "devise-token-auth-vue";
+import { vueDeviseAuth, useAuthCreate } from "devise-token-auth-vue";
+import { DeviseAuth } from "devise-token-auth-vue/DeviseAuth";
 import { AuthHeaders } from "devise-token-auth-vue/types";
 
 const baseURL = "https://example.net";
 
-class HttpProxy implements HttpInterface {
-  async makeRequest<PItem = any, P extends Array<PItem> = PItem[]>(
+type HttpProxyParams = [];
+
+class HttpProxy implements HttpInterface<HttpProxyParams, FetchResponse<any>> {
+  async makeRequest(
     p: MakeRequestParams,
-    ...params: P
+    ...params: HttpProxyParams
   ): Promise<any> {
     console.log("make request: ", p, params);
     const resp = await $fetch.raw(p.url, {
@@ -25,9 +30,19 @@ class HttpProxy implements HttpInterface {
 
     console.log("resp: ", resp);
 
-    p.getRespHeaders(Object.fromEntries(resp.headers.entries()));
-
     return resp._data;
+  }
+
+  getResponseHeaders(resp: FetchResponse<any>) {
+    return Object.fromEntries(resp.headers.entries());
+  }
+
+  checkRequestErrorIsUnauthorized(e: any): boolean {
+    if (e instanceof FetchError && e.status === 401) {
+      return true;
+    }
+
+    return false;
   }
 }
 
@@ -56,10 +71,23 @@ class CookieStorage implements CookieStorageInterface {
   }
 }
 
+// `useAuth` composable has to be declared here to return a concrete type.
+//
+// Typescript doesn't know if initializer ran, and, if declared in plugin,
+//   `useAuth` would have to return any as a result.
+//
+// In nuxt, this function declaration could be moved to `composables` folder
+//   to enable auto import.
+export const useAuth = useAuthCreate<HttpProxyParams, FetchResponse<any>>();
+
 export default defineNuxtPlugin((nuxtApp) => {
-  nuxtApp.vueApp.use(vueDeviseAuth, {
+  const authInstance = new DeviseAuth({
     apiUrl: "/api/v1/auth",
     http: new HttpProxy(),
     cookie: new CookieStorage(),
+  });
+
+  nuxtApp.vueApp.use(vueDeviseAuth, {
+    authInstance,
   });
 });

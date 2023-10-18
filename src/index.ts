@@ -1,16 +1,35 @@
 import { App, inject } from "vue";
 
 import { DeviseAuth } from "./DeviseAuth";
-import type { DeviseAuthOptions } from "./types/options";
 
-export const AuthInstanceObj = new DeviseAuth();
+export const DEFAULT_AUTH_INSTANCE_KEY = "authInstance";
 
 export const vueDeviseAuth = {
-  install(app: App, options: DeviseAuthOptions) {
-    AuthInstanceObj.init(options);
+  install<HttpParamsTy extends any[], RespTy>(
+    app: App,
+    options: {
+      authInstance: DeviseAuth<HttpParamsTy, RespTy>;
+    }
+  ) {
+    app.provide(DEFAULT_AUTH_INSTANCE_KEY, options.authInstance);
   },
 };
 
-export const useAuth = () => {
-  return AuthInstanceObj;
+export const useAuthCreate = <HttpParamsTy extends any[], RespTy>() => {
+  return () => {
+    const authInstance = inject<DeviseAuth<HttpParamsTy, RespTy>>(
+      DEFAULT_AUTH_INSTANCE_KEY
+    );
+
+    if (!authInstance) {
+      console.error(
+        "devise-token-auth-vue: No auth instance provided",
+        "Check that 'devise-token-auth-vue' plugin is installed and initialized"
+      );
+
+      throw new ReferenceError("No auth instance provided");
+    }
+
+    return authInstance;
+  };
 };
