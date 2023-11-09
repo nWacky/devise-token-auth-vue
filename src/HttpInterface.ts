@@ -1,23 +1,34 @@
 import type { AuthHeaders } from "./types";
 
-export type Method = "GET" | "POST" | "PUT" | "DELETE";
+export type HttpMethod =
+  | "GET"
+  | "HEAD"
+  | "POST"
+  | "PUT"
+  | "DELETE"
+  | "CONNECT"
+  | "OPTIONS"
+  | "TRACE"
+  | "PATCH";
 
 export type GetRespHeadersTy = (h: AuthHeaders) => void;
 
-export type RequestParamsBodyTy = Partial<Record<string, string>> | string;
+export type RequestParamsTy = Partial<Record<string, string>>;
+export type RequestBodyTy = Partial<Record<string, string>> | any;
 
 export type MakeRequestParams = {
   url: string;
 
   reqHeaders?: AuthHeaders;
 
+  /** Http method */
+  method: HttpMethod;
+
   /** Body to be passed as POST/PUT request body */
-  body?: RequestParamsBodyTy;
+  body?: RequestBodyTy;
 
   /** GET/POST request params */
-  params?: RequestParamsBodyTy;
-
-  method: Method;
+  params?: RequestParamsTy;
 };
 
 export interface HttpInterface<ParamsTy extends any[], RespTy> {
